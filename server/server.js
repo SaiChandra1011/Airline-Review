@@ -38,7 +38,7 @@ app.get("/api/v1/airlines/:id", async(req,res)=>{
             status:"succes",
             data:{
                 airlines:results.rows[0],
-            }
+            },
         });
     }
     catch(err){
@@ -50,36 +50,63 @@ app.get("/api/v1/airlines/:id", async(req,res)=>{
 });
 
 // create a airline
-app.post("/api/v1/airlines", (req,res)=>{
+app.post("/api/v1/airlines", async (req,res)=>{
     console.log(req.body);
+    try{
+        const results = await db.query("INSERT INTO airlines (airline_name, country_of_origin) values($1, $2) returning *",
+             [req.body.airline_name, req.body.country_of_origin]);
+             console.log(results);
+             res.status(201).json({
+                status:"succes",
+                data:{
+                    airlines:results.rows[0],
+                },
+            });
+    }
+    catch(err){
+        console.log(err);
+    }
 
-    res.status(201).json({
-        status:"succes",
-        data:{
-            airlines:"indigo",
-        }
-    });
 });
 
 // update airline
-app.put("/api/v1/airlines/:id", (req,res)=>{
+app.put("/api/v1/airlines/:id",async (req,res)=>{
+    try{
+        const results = await db.query("UPDATE airlines SET airline_name = $1 , countru_of_origin = $2 WHERE id = $4 returning *", [req.body.airline_name, 
+            req.body.countru_of_origin, req.params.id ]);
+
+            res.status(200).json({
+                status:"succes",
+                data:{
+                    airlines:results.rows[0],
+                },
+            });
+            console.log(results);
+    }
+    catch(err){
+        console.log(err);
+
+    }
     console.log(req.params.id);
     console.log(req.body);
 
-    res.status(200).json({
-        status:"succes",
-        data:{
-            airlines:"indigo",
-        }
-    });
 });
 
 
 //delete airline
-app.delete("/api/v1/airlines/:id", (res,req)=>{
-    res.status(204).json({
-        status : "succes",
-    });
+app.delete("/api/v1/airlines/:id", async(res,req)=>{
+    try{
+        const results = db.query("DELETE FROM airlines where id = $1", [req.params.id]);
+        res.status(204).json({
+            status : "succes",
+        });
+    }
+    catch(err){
+        console.log(err);
+
+    }
+
+ 
 });
 
 
