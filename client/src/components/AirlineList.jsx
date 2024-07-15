@@ -18,6 +18,15 @@ const AirlineList = (props) => {
         fetchData();
     }, [setAirlines]);
 
+    const handleDelete = async (id) => {
+        try {
+            await AirlineReviewer.delete(`/${id}`);
+            setAirlines(airlines.filter(airline => airline.id !== id));
+        } catch (err) {
+            console.error(err);
+        }
+    };
+
     return (
         <div>
             <div className="list-group">
@@ -42,7 +51,7 @@ const AirlineList = (props) => {
                                         <button className="btn btn-warning rounded-pill">Update</button>
                                     </td>
                                     <td>
-                                        <button className="btn btn-danger">Delete</button>
+                                        <button onClick = {() => handleDelete(airline.id)} className="btn btn-danger">Delete</button>
                                     </td>
                                 </tr>
                             );
